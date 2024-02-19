@@ -1,0 +1,37 @@
+package com.example.loanCheck;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient;
+
+@RestController
+public class LoanCheckController {
+	
+	@GetMapping("/loancheck/{cs}/{loanamt}/{salary}")
+	public ResponseEntity<LoanResponse> checkLoanLimit(@PathVariable("cs") int cs, @PathVariable("loanamt") int loanamt,@PathVariable("salary") int salary){
+		int approvedLoanAmt=0;
+		int status=0;
+		if(salary>50000 && cs>700) {
+			status=1;
+			if(loanamt>1000000) {
+				approvedLoanAmt=1000000;
+			}
+			else{
+				approvedLoanAmt=loanamt;
+			}
+		}
+		LoanResponse lr=new LoanResponse(approvedLoanAmt, status);
+		return ResponseEntity.ok(lr);
+	}
+	
+	@GetMapping("/posts/{id}")
+	public ResponseEntity<PostResponse> getPosttest(@PathVariable("id")String id){
+		String uri="https://jsonplaceholder.typicode.com/posts/";
+		PostResponse pr=RestClient.create().get().uri(uri+id).retrieve().body(PostResponse.class);
+		System.out.println("in post msg"+id);
+		return ResponseEntity.ok(pr);
+	}
+
+}
